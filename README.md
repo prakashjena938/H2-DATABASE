@@ -1,160 +1,140 @@
-# H2 Database Explained
+# H2 Database 
 
-> A complete guide to H2 Database covering architecture, execution modes, storage types, diagrams, JDBC URLs, and real-world usage.
+A complete guide to H2 Database covering architecture, execution modes, storage types, and real-world usage.
 
-[![Java](https://img.shields.io/badge/Java-Compatible-orange.svg)](https://www.java.com)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-Ready-green.svg)](https://spring.io/projects/spring-boot)
-[![License](https://img.shields.io/badge/License-Educational-blue.svg)](LICENSE)
+## Table of Contents
 
----
+- [Introduction](#introduction)
+- [Why H2 Database](#why-h2-database)
+- [Understanding H2 Modes](#understanding-h2-modes)
+- [Embedded Mode](#embedded-mode)
+- [Server Mode](#server-mode)
+- [Hybrid Mode](#hybrid-mode)
+- [Architecture](#architecture)
+- [Spring Boot Integration](#spring-boot-integration)
+- [Production Usage](#production-usage)
+- [Quick Reference](#quick-reference)
 
-## 📚 Table of Contents
+## Introduction
 
-- [Introduction](#-introduction-to-h2-database)
-- [Why H2?](#-why-h2-database)
-- [Understanding H2 Modes](#-understanding-h2-modes)
-- [Execution Modes](#1-execution-modes-how-h2-runs)
-- [Storage Modes](#2-storage-modes-where-data-lives)
-- [Embedded Mode](#-embedded-mode)
-- [Server Mode](#-server-tcp-mode)
-- [Hybrid Mode](#-hybrid-mode-auto_server)
-- [Architecture](#-conceptual-architecture-diagram)
-- [Spring Boot Integration](#-h2-with-spring-boot)
-- [Production Usage](#-is-h2-used-in-production)
-- [Conclusion](#-conclusion)
-
----
-
-## 🎯 Introduction to H2 Database
-
-**H2** is a lightweight, open-source SQL database written entirely in Java. It is commonly used for development, testing, and learning purposes. Unlike traditional databases, H2 can run inside an application or as a standalone server.
+H2 is a lightweight, open-source SQL database written entirely in Java. It is commonly used for development, testing, and learning purposes. Unlike traditional databases, H2 can run inside an application or as a standalone server.
 
 ### Key Features
-- **Pure Java**: No native dependencies
-- **Zero Configuration**: Works out of the box
-- **Fast Performance**: Optimized for development workflows
-- **Flexible**: Multiple deployment modes
 
----
+- Pure Java database engine
+- No separate installation required
+- Extremely fast for development
+- Easy integration with Spring Boot
+- Supports in-memory and file-based storage
 
-## 💡 Why H2 Database?
+## Why H2 Database
 
 | Feature | Description |
 |---------|-------------|
-| ☕ **Pure Java** | Database engine written entirely in Java |
-| 🚀 **No Installation** | No separate database server setup required |
-| ⚡ **Extremely Fast** | Optimized for development and testing |
-| 🔌 **Easy Integration** | Seamless integration with Spring Boot |
-| 💾 **Flexible Storage** | Supports both in-memory and file-based storage |
+| Pure Java | Database engine written entirely in Java |
+| No Installation | No separate database server setup required |
+| Fast Performance | Optimized for development and testing |
+| Easy Integration | Seamless integration with Spring Boot |
+| Flexible Storage | Supports both in-memory and file-based storage |
 
----
+## Understanding H2 Modes
 
-## 🔄 Understanding H2 Modes
+H2 database modes are defined by two independent dimensions:
 
-H2 database modes are defined by **two independent dimensions**:
+### Execution Modes (How H2 Runs)
 
-### 1. Execution Modes (How H2 Runs)
-- 🖥️ **Embedded Mode** - Runs inside your application's JVM
-- 🌐 **Server (TCP) Mode** - Runs as a standalone database server
-- 🔀 **Hybrid Mode (AUTO_SERVER)** - Combines embedded and server modes
+- **Embedded Mode** - Runs inside your application's JVM
+- **Server (TCP) Mode** - Runs as a standalone database server
+- **Hybrid Mode (AUTO_SERVER)** - Combines embedded and server modes
 
-### 2. Storage Modes (Where Data Lives)
-- 🧠 **In-Memory Database** - Data stored in RAM (volatile)
-- 💿 **File-Based Database** - Data persisted to disk (permanent)
+### Storage Modes (Where Data Lives)
 
----
+- **In-Memory Database** - Data stored in RAM (volatile)
+- **File-Based Database** - Data persisted to disk (permanent)
 
-## 🖥️ Embedded Mode
+## Embedded Mode
 
-In embedded mode, H2 runs **inside the same JVM** as the application. No separate database server is required.
+In embedded mode, H2 runs inside the same JVM as the application. No separate database server is required.
 
 ### Embedded + In-Memory Database
 
-```properties
+```
 jdbc:h2:mem:devdb
 ```
 
 **Characteristics:**
-- ✅ Database exists only in RAM
-- ❌ All data is lost when the application shuts down
-- 🎯 **Ideal for:** Unit testing, temporary data
+- Database exists only in RAM
+- All data is lost when the application shuts down
+- Ideal for unit testing and temporary data
 
 ### Embedded + File-Based Database
 
-```properties
+```
 jdbc:h2:file:./data/devdb
 ```
 
 **Characteristics:**
-- ✅ Data is stored on disk
-- ✅ Persistent across application restarts
-- 🎯 **Ideal for:** Local development, prototyping
+- Data is stored on disk
+- Persistent across application restarts
+- Ideal for local development and prototyping
 
----
+## Server Mode
 
-## 🌐 Server (TCP) Mode
+In server mode, H2 runs as a standalone process. Applications connect to it using TCP, similar to MySQL or PostgreSQL.
 
-In server mode, H2 runs as a **standalone process**. Applications connect to it using TCP, similar to MySQL or PostgreSQL.
-
-```properties
+```
 jdbc:h2:tcp://localhost/~/devdb
 ```
 
 **Characteristics:**
-- ✅ Multiple applications can connect simultaneously
-- ✅ Database runs independently of applications
-- 🎯 **Ideal for:** Integration testing, team development
+- Multiple applications can connect simultaneously
+- Database runs independently of applications
+- Ideal for integration testing and team development
 
----
+## Hybrid Mode
 
-## 🔀 Hybrid Mode (AUTO_SERVER)
+Hybrid mode combines embedded and server modes. The database starts embedded and automatically opens a TCP server if another JVM tries to connect.
 
-Hybrid mode combines embedded and server modes. The database starts **embedded** and automatically opens a TCP server if another JVM tries to connect.
-
-```properties
+```
 jdbc:h2:file:./data/devdb;AUTO_SERVER=TRUE
 ```
 
 **Characteristics:**
-- ✅ Best of both worlds
-- ✅ Automatic server promotion when needed
-- 🎯 **Ideal for:** Flexible development environments
+- Best of both worlds
+- Automatic server promotion when needed
+- Ideal for flexible development environments
 
----
-
-## 🏗️ Conceptual Architecture Diagram
+## Architecture
 
 ```
-┌─────────────────────────┐
-│ Java Application (JVM)  │
-│   └── H2 Engine         │
-└─────────────┬───────────┘
-              │
-              ▼
++-------------------------+
+| Java Application (JVM)  |
+|   └── H2 Engine         |
++-------------------------+
+            |
+            v
       Database Storage
-      ┌───────────────┐
-      │  In-Memory    │  (Temporary)
-      │  or           │
-      │  File-Based   │  (Persistent)
-      └───────────────┘
+      +-----------------+
+      |  In-Memory   ---|---> (Temporary)
+      |  or             |
+      |  File-Based  ---|---> (Persistent)
+      +-----------------+
 ```
 
-### Mode Comparison Matrix
+### Mode Comparison
 
 | Mode | Location | Persistence | Multi-JVM | Use Case |
 |------|----------|-------------|-----------|----------|
-| Embedded + Memory | RAM | ❌ No | ❌ No | Unit Tests |
-| Embedded + File | Disk | ✅ Yes | ❌ No | Local Dev |
-| Server (TCP) | Disk | ✅ Yes | ✅ Yes | Integration Tests |
-| Hybrid | Disk | ✅ Yes | ✅ Yes | Flexible Dev |
+| Embedded + Memory | RAM | No | No | Unit Tests |
+| Embedded + File | Disk | Yes | No | Local Development |
+| Server (TCP) | Disk | Yes | Yes | Integration Tests |
+| Hybrid | Disk | Yes | Yes | Flexible Development |
 
----
-
-## 🍃 H2 with Spring Boot
+## Spring Boot Integration
 
 Below is a typical Spring Boot configuration for H2:
 
-### application.properties
+### Application Properties
 
 ```properties
 # Database Configuration
@@ -196,53 +176,34 @@ Once your Spring Boot application is running:
 1. Navigate to: `http://localhost:8080/h2-console`
 2. Use JDBC URL: `jdbc:h2:file:./data/devdb`
 3. Username: `sa`
-4. Password: *(leave empty)*
+4. Password: (leave empty)
 
----
+## Production Usage
 
-## ⚠️ Is H2 Used in Production?
+H2 is **not recommended for production** systems. It is mainly used for:
 
-### ❌ Not Recommended for Production
+- Development
+- Testing
+- Learning
+- Prototyping
 
-H2 is **mainly used for**:
-- 🧪 Development
-- 🔬 Testing
-- 📚 Learning
-- 🎓 Prototyping
-
-### ✅ Production Alternatives
+### Production Alternatives
 
 For production systems, use enterprise-grade databases:
 
 | Database | Use Case |
 |----------|----------|
-| **PostgreSQL** | General purpose, feature-rich |
-| **MySQL** | Web applications, high read volumes |
-| **Oracle** | Enterprise applications |
-| **SQL Server** | Microsoft ecosystem |
-| **MongoDB** | Document-oriented data |
+| PostgreSQL | General purpose, feature-rich |
+| MySQL | Web applications, high read volumes |
+| Oracle | Enterprise applications |
+| SQL Server | Microsoft ecosystem |
+| MongoDB | Document-oriented data |
 
----
-
-## 🎓 Conclusion
-
-H2 is a **powerful yet lightweight database** that helps developers build, test, and prototype applications quickly. Understanding its modes makes it easier to transition to production-grade databases later.
-
-### Key Takeaways
-
-- ✅ Use **in-memory mode** for unit tests
-- ✅ Use **file-based embedded mode** for local development
-- ✅ Use **server mode** for team collaboration
-- ✅ Use **hybrid mode** for maximum flexibility
-- ❌ Don't use H2 in production environments
-
----
-
-## 📖 Quick Reference
+## Quick Reference
 
 ### Common JDBC URLs
 
-```properties
+```
 # In-Memory (volatile)
 jdbc:h2:mem:testdb
 
@@ -269,17 +230,19 @@ jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 | `MODE=MySQL` | MySQL compatibility mode |
 | `TRACE_LEVEL_FILE=4` | Enable detailed logging |
 
----
+## Conclusion
 
-## 📝 License
+H2 is a powerful yet lightweight database that helps developers build, test, and prototype applications quickly. Understanding its modes makes it easier to transition to production-grade databases later.
 
-© 2026 – H2 Database Learning Guide
+### Key Takeaways
 
-This is an educational resource. H2 Database is licensed under the [MPL 2.0 or EPL 1.0](http://www.h2database.com/html/license.html).
+- Use in-memory mode for unit tests
+- Use file-based embedded mode for local development
+- Use server mode for team collaboration
+- Use hybrid mode for maximum flexibility
+- Don't use H2 in production environments
 
----
-
-## 🔗 Additional Resources
+## Additional Resources
 
 - [Official H2 Documentation](http://www.h2database.com/html/main.html)
 - [Spring Boot H2 Guide](https://spring.io/guides/gs/accessing-data-jpa/)
@@ -287,4 +250,4 @@ This is an educational resource. H2 Database is licensed under the [MPL 2.0 or E
 
 ---
 
-**Made with ❤️ for Java Developers**
+© 2026 – H2 Database Learning Guide
